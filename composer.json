@@ -30,6 +30,9 @@
       "webdna\\commerce\\bulkpricing\\": "src/"
     }
   },
+  "scripts": {
+    "phpstan": "phpstan --memory-limit=1G"
+  },
   "extra": {
     "name": "Commerce Bulk Pricing",
     "handle": "commerce-bulk-pricing",
@@ -37,5 +40,17 @@
     "hasCpSection": false,
     "changelogUrl": "https://raw.githubusercontent.com/webdna/commerce-bulk-pricing/master/CHANGELOG.md",
     "class": "webdna\\commerce\\bulkpricing\\BulkPricing"
+  },
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require-dev": {
+    "craftcms/phpstan": "dev-main",
+    "craftcms/rector": "dev-main"
   }
 }
