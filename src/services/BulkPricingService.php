@@ -42,7 +42,9 @@ class BulkPricingService extends Component
      */
     public function applyBulkPricing(LineItem $lineItem, ?User $user, string $paymentCurrency): LineItem
     {
-        $element = (isset($lineItem->purchasable->product->type->hasVariants) && $lineItem->purchasable->product->type->hasVariants) ? $lineItem->purchasable : $lineItem->purchasable->product;
+        $variants = $lineItem->purchasable->product->getVariants();
+        $element = (count($variants) > 1) ? $lineItem->purchasable : $lineItem->purchasable->product;
+
         if ($element) {
             foreach ($element->getFieldValues() as $key => $field)
             {
