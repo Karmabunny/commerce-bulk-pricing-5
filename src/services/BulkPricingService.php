@@ -88,7 +88,8 @@ class BulkPricingService extends Component
                                         $lineItem->setPromotionalPrice($value);
                                     }
 
-                                    $lineItem->snapshot['taxIncluded'] = (bool)$f->taxIncluded;
+                                    // TODO: This no longer works
+                                    // $lineItem->snapshot['taxIncluded'] = (bool)$f->taxIncluded;
                                 }
                             }
 
