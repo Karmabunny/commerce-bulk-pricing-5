@@ -70,49 +70,9 @@ class BulkPricingService extends Component
                             {
                                 if ($qty != 'iso' && $lineItem->qty >= $qty && $value != '') {
                                     $lineItem->price = $value;
-                                    if ($lineItem->purchasable->getSales()) {
-                                        $originalPrice = $value;
-                                        $takeOffAmount = 0;
+                                    if ($lineItem->purchasable->getOnPromotion()) {
                                         $newPrice = null;
-
-                                        /** @var Sale $sale */
-                                        foreach ($lineItem->purchasable->getSales() as $sale) {
-
-                                            switch ($sale->apply) {
-                                                case SaleRecord::APPLY_BY_PERCENT:
-                                                    // applyAmount is stored as a negative already
-                                                    $takeOffAmount += ($sale->applyAmount * $originalPrice);
-
-                                                    if ($sale->ignorePrevious) {
-                                                        $newPrice = $originalPrice + ($sale->applyAmount * $originalPrice);
-                                                    }
-                                                    break;
-                                                case SaleRecord::APPLY_TO_PERCENT:
-                                                    // applyAmount needs to be reversed since it is stored as negative
-                                                    $newPrice = (-$sale->applyAmount * $originalPrice);
-                                                    break;
-                                                case SaleRecord::APPLY_BY_FLAT:
-                                                    // applyAmount is stored as a negative already
-                                                    $takeOffAmount += $sale->applyAmount;
-                                                    if ($sale->ignorePrevious) {
-                                                        // applyAmount is always negative so add the negative amount to the original price for the new price.
-                                                        $newPrice = $originalPrice + $sale->applyAmount;
-                                                    }
-                                                    break;
-                                                case SaleRecord::APPLY_TO_FLAT:
-                                                    // applyAmount needs to be reversed since it is stored as negative
-                                                    $newPrice = -$sale->applyAmount;
-                                                    break;
-                                            }
-
-                                            // If the stop processing flag is true, it must been the last
-                                            // since the sales for this purchasable would have returned it last.
-                                            if ($sale->stopProcessing) {
-                                                break;
-                                            }
-                                        }
-
-                                        $salePrice = ($originalPrice + $takeOffAmount);
+                                        $newPrice = $lineItem->getSalePrice();
 
                                         // A newPrice has been set so use it.
                                         if (null !== $newPrice) {
@@ -123,9 +83,9 @@ class BulkPricingService extends Component
                                             $salePrice = 0;
                                         }
 
-                                        $lineItem->salePrice = strval($salePrice);
+                                        $lineItem->setPromotionalPrice($salePrice);
                                     } else {
-                                        $lineItem->salePrice = strval($value);
+                                        $lineItem->setPromotionalPrice($value);
                                     }
 
                                     $lineItem->snapshot['taxIncluded'] = (bool)$f->taxIncluded;
