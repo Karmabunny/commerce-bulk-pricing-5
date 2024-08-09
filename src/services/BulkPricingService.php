@@ -105,9 +105,10 @@ class BulkPricingService extends Component
                     'isNew' => false,
                 ]));
             }
-
-            return $lineItem;
         }
+
+
+        return $lineItem;
     }
 
 }
