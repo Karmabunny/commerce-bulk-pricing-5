@@ -13,6 +13,7 @@ namespace webdna\commerce\bulkpricing\services;
 use webdna\commerce\bulkpricing\fields\BulkPricingField;
 
 use Craft;
+use craft\base\NestedElementInterface;
 use craft\elements\User;
 
 use craft\commerce\models\LineItem;
@@ -42,10 +43,16 @@ class BulkPricingService extends Component
      */
     public function applyBulkPricing(LineItem $lineItem, ?User $user, string $paymentCurrency): LineItem
     {
-        $variants = $lineItem->purchasable->product->getVariants();
-        $element = (count($variants) > 1) ? $lineItem->purchasable : $lineItem->purchasable->product;
+        $elements = [$lineItem->purchasable];
 
-        if ($element) {
+        if (
+            $lineItem->purchasable instanceof NestedElementInterface
+            and ($parent = $lineItem->purchasable->getOwner())
+        ) {
+            $elements[] = $parent;
+        }
+
+        foreach ($elements as $element) {
             foreach ($element->getFieldValues() as $key => $field)
             {
                 if ( (get_class($f = Craft::$app->getFields()->getFieldByHandle($key)) == BulkPricingField::class) && (is_array($field)) ) {
